@@ -1,4 +1,4 @@
-from client_bench import *
+from bench import *
 
 content = """
 $ ab -c500 -n1000 http://192.168.6.30:8301/public/columns/33/contents

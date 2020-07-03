@@ -1,5 +1,6 @@
 import os
 import re
+from subprocess import Popen, PIPE, DEVNULL
 
 """
 用于在客户端发起基准测试
@@ -30,8 +31,18 @@ class BenchPattern:
         return self.v_func(self.m_func(m)) if m else None
 
 
+sorted_patterns = [
+    BenchPattern("uri", r'Document Path:\s+(.+)'),
+    BenchPattern("concurrency", r'Concurrency Level:\s+(\d+)', v_func=int),
+    BenchPattern("requests", r'Complete requests:\s+(\d+)', v_func=int),
+    BenchPattern("qps", r'Requests per second:\s+([\d.]+)\s.*', v_func=float),
+    BenchPattern("tpr", r'Time per request:\s+([\d.]+)\s.*', v_func=float),
+    BenchPattern("t_90", r'\s*90%\s+(\d+)', v_func=int),
+]
+
+
 class BenchCollection:
-    def __init__(self, patterns):
+    def __init__(self, patterns=sorted_patterns):
         self.patterns = patterns
 
     def bench(self, url, c=50, n=10000):
@@ -59,13 +70,3 @@ class BenchCollection:
                 break
 
         return res
-
-
-sorted_patterns = [
-    BenchPattern("uri", r'Document Path:\s+(.+)'),
-    BenchPattern("concurrency", r'Concurrency Level:\s+(\d+)', v_func=int),
-    BenchPattern("requests", r'Complete requests:\s+(\d+)', v_func=int),
-    BenchPattern("qps", r'Requests per second:\s+([\d.]+)\s.*', v_func=float),
-    BenchPattern("tpr", r'Time per request:\s+([\d.]+)\s.*', v_func=float),
-    BenchPattern("t_90", r'\s*90%\s+(\d+)', v_func=int),
-]
