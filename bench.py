@@ -63,7 +63,7 @@ class BenchCollection:
         for line in lines:
             pattern = self.patterns[idx]
             ans = pattern.match(line)
-            if ans is not None:
+            if ans:
                 res[pattern.name] = ans
                 idx += 1
             if idx >= size:

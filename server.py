@@ -5,34 +5,32 @@ import os
 import subprocess
 import urllib.request
 
-pid_file = "application.pid"
-program = "measure-rest-0.0.1-SNAPSHOT.jar"
-
 
 class JavaApplication:
     def __stop_app(self):
-        if os.path.exists(pid_file):
-            pid = open(pid_file).readline()
+        if os.path.exists(Server.pid_file):
+            pid = open(Server.pid_file).readline()
             os.kill(int(pid), 15)
             print("停止程序...")
             time.sleep(0.5)
 
     def __start_app(self, args):
-        subprocess.Popen(['nohup', 'java', '-jar', program, args],
-                         stdout=subprocess.PIPE,
-                         universal_newlines=True)
+        subprocess.Popen(f'nohup java -jar {Server.program} {args}', shell=True)
 
     def __check_app(self):
         i = 0
         url = f'http://{Server.host}:{Server.app_port}{Server.test_uri}'
+        time.sleep(1)
         while True:
-            with urllib.request.urlopen(url) as response:
-                if response.ok():
+            try:
+                if urllib.request.urlopen(url).getcode() == 200:
                     print("启动成功...")
                     return
-                else:
-                    print("等待程序启动...")
-            time.sleep(0.1)
+            except urllib.request.URLError as e:
+                pass
+            i += 1
+            print("等待程序启动...", i)
+            time.sleep(1)
 
     def restart(self, conn, msg):
         self.__stop_app()

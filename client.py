@@ -100,9 +100,6 @@ client_deals = [
     CommandDeal(Server.started, lambda m, c, a: a.start_bench(c)),
 ]
 
-bench_counts = [1,
-                # 10, 50, 100, 200, 500
-                ]
 
 if __name__ == '__main__':
     args_pattern = "--paramUrls={0} --pathUrls={0} --{1}"
@@ -112,10 +109,10 @@ if __name__ == '__main__':
     ]
     for opt in ["no-optimize", "optimize"]:
         for url_pattern in urls_pattern:
-            for i in bench_counts:
+            for i in Client.mapping_counts:
                 args = args_pattern.format(i, opt)
                 url = url_pattern.format(host=Server.host, port=Server.app_port, i=i, opt=opt)
-                app = ClientApp(url, 100, 3000, args, 10)
+                app = ClientApp(url, Client.concurrent, Client.requests, args, Client.repeat_times)
                 deals = ClientDeals(client_deals)
                 client = ClientSocket(deals, app)
                 client.run()

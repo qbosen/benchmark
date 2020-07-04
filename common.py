@@ -1,15 +1,17 @@
-# 客户端发送，服务端接收
 class Client:
     # 客户端关闭
     close = "close"
     init = "init"
+    concurrent = 500
+    requests = 30000
+    repeat_times = 10
+    mapping_counts = [1, 10, 50, 100, 200, 500]
 
     @staticmethod
     def args(header, args):
         return header + ":" + args
 
 
-# 服务端发送，客户端接收
 class Server:
     host = "192.168.6.167"
     port = 7805
@@ -17,6 +19,8 @@ class Server:
     started = "app started"
     restart = "restart"
     test_uri = "/param/1?param=test"
+    pid_file = "application.pid"
+    program = "measure-rest-0.0.1-SNAPSHOT.jar"
 
 
 class CommandDeal:
