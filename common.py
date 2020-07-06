@@ -16,7 +16,7 @@ class Server:
     host = "192.168.6.167"
     port = 7805
     app_port = 7801
-    started = "app started"
+    started = "started"
     restart = "restart"
     test_uri = "/param/1?param=test"
     pid_file = "application.pid"

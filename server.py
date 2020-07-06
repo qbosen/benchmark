@@ -7,17 +7,17 @@ import urllib.request
 
 
 class JavaApplication:
-    def __stop_app(self):
+    def stop_app(self):
         if os.path.exists(Server.pid_file):
             pid = open(Server.pid_file).readline()
             os.kill(int(pid), 15)
             print("停止程序...")
             time.sleep(0.5)
 
-    def __start_app(self, args):
+    def start_app(self, args):
         subprocess.Popen(f'nohup java -jar {Server.program} {args}', shell=True)
 
-    def __check_app(self):
+    def wait_app_start(self):
         i = 0
         url = f'http://{Server.host}:{Server.app_port}{Server.test_uri}'
         time.sleep(1)
@@ -33,9 +33,9 @@ class JavaApplication:
             time.sleep(1)
 
     def restart(self, conn, msg):
-        self.__stop_app()
-        self.__start_app(msg.split(":")[1])
-        self.__check_app()
+        self.stop_app()
+        self.start_app(msg.split(":")[1])
+        self.wait_app_start()
         conn.send(Server.started.encode('utf-8'))
 
     def close(self, conn):
@@ -76,12 +76,18 @@ class ServerSocket:
         self.app = app
 
     def run(self):
-        while True:
-            conn, addr = self.server.accept()
-            print("接受连接", addr)
-            command = conn.recv(1024).decode('utf-8')
-            print('收到消息:', command)
-            self.dealer.deal(command, conn, self.server, self.app)
+        try:
+            while True:
+                conn, addr = self.server.accept()
+                print("接受连接", addr)
+                command = conn.recv(1024).decode('utf-8')
+                print('收到消息:', command)
+                self.dealer.deal(command, conn, self.server, self.app)
+        except KeyboardInterrupt:
+            self.app.stop_app()
+            print("关闭程序...")
+            self.server.close()
+            print("关闭socket...")
 
 
 server_deals = [

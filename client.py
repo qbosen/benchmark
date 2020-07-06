@@ -52,6 +52,10 @@ class ClientApp:
 
 
 class ClientDeals:
+    """
+    根据不同的业务，指定不同的参数结构
+    """
+
     def __init__(self, deals, default_deal=CommandDeal("*", lambda m, c, a: print("无法处理的消息:" + m))):
         self.deal_map = {}
         self.default_deal = default_deal
@@ -59,6 +63,13 @@ class ClientDeals:
             self.deal_map[d.command] = d
 
     def deal(self, msg, client, app):
+        """
+        根据消息，执行不同的操作
+        :param msg: 消息
+        :param client: 客户端连接
+        :param app: 处理程序
+        :return:
+        """
         if msg in self.deal_map:
             self.deal_map[msg].deal(msg, client, app)
         else:
@@ -99,7 +110,6 @@ client_deals = [
     # started 服务已启动，开始benchmark测试, 完成后关闭client连接
     CommandDeal(Server.started, lambda m, c, a: a.start_bench(c)),
 ]
-
 
 if __name__ == '__main__':
     args_pattern = "--paramUrls={0} --pathUrls={0} --{1}"
