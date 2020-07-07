@@ -76,18 +76,18 @@ class ServerSocket:
         self.app = app
 
     def run(self):
-        try:
-            while True:
+        while True:
+            try:
                 conn, addr = self.server.accept()
                 print("接受连接", addr)
                 command = conn.recv(1024).decode('utf-8')
                 print('收到消息:', command)
                 self.dealer.deal(command, conn, self.server, self.app)
-        except KeyboardInterrupt:
-            self.app.stop_app()
-            print("关闭程序...")
-            self.server.close()
-            print("关闭socket...")
+            except KeyboardInterrupt:
+                self.app.stop_app()
+                print("关闭程序...")
+                self.server.close()
+                print("关闭socket...")
 
 
 server_deals = [
